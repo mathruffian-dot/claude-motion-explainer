@@ -23,11 +23,13 @@
 | [`motion-design`](skills/motion-design/SKILL.md) | 品味規則：緩動、節奏、閱讀停留、繁體中文排版、三色配色，全部附具體數字 |
 | [`review-loop`](skills/review-loop/SKILL.md) | 自我審查：在每個旁白子句截一格拼成 contact sheet，逐張對照檢查表 |
 
-`motion-explainer/references/lessons.md` 收錄第一支片實際踩過的 22 個坑：整格樣式消失、遮罩漏字、數字和長條不同步、字型不一致……每一條都附解法。
+`motion-explainer/references/lessons.md` 收錄第一支片實際踩過的 23 個坑：整格樣式消失、遮罩漏字、數字和長條不同步、字型不一致……每一條都附解法。
 
 ## 需要的環境
 
-- Node.js 22+、ffmpeg、Python 3 + Pillow
+先跑 `python skills/motion-explainer/scripts/hw_check.py`：它會檢查你的 CPU、記憶體、GPU 和硬碟，建議要用哪個旁白引擎、輸出時同時開幾個 worker。各步驟吃多少資源，見 [`hardware.md`](skills/motion-explainer/references/hardware.md)。
+
+- Node.js 22+、ffmpeg、Python 3 + Pillow + fonttools（`pip install pillow fonttools`；另外裝 `brotli` 的話，瘦身後的字型會是 woff2）
 - HyperFrames：`npm install -g hyperframes`，再跑 `hyperframes skills update` 和 `hyperframes skills update faceless-explainer`
 - 旁白（擇一，詳見 [`tts-setup.md`](skills/motion-explainer/references/tts-setup.md)）：
   - **edge-tts（預設，大多數人用這個）**：`pip install edge-tts`。不需要 GPU，產生時要連網，有台灣口音的男聲和女聲。
@@ -41,7 +43,7 @@ cp -r claude-motion-explainer/skills/* ~/.claude/skills/        # Claude Code
 # Codex / 其他 agent：複製到 ~/.agents/skills/
 ```
 
-字型（開源 OFL）不放在 repo 裡，每個專案要用時，跑一次 `bash skills/motion-explainer/scripts/fetch_fonts.sh <專案資料夾>` 就會放好。
+字型（開源 OFL）不放在 repo 裡，每個專案要用時，跑一次 `bash skills/motion-explainer/scripts/fetch_fonts.sh <專案資料夾>` 就會放好。影片做完、正式輸出前，`subset_fonts.py` 會把中文字型瘦身成只含片中用到的字（12–17 MB 降到幾百 KB）。
 
 ## 怎麼用
 

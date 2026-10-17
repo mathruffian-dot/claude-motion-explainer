@@ -15,13 +15,14 @@ description: 用自然語言做「原理解說動畫影片」的端到端流程�
 
 ## 0. 環境檢查（第一次用時）
 
-- Node.js 22+、ffmpeg/ffprobe、Python 3 + Pillow。
+- **先跑 `python scripts/hw_check.py --project <專案>`**：它會偵測 CPU、記憶體、GPU 和硬碟，並建議要用哪個旁白引擎、`--workers` 設多少、sub-agent 要不要分批派。照 `references/hardware.md` 的說明告訴使用者；那些建議都是推估，不是跑分。
+- Node.js 22+、ffmpeg/ffprobe、Python 3 + Pillow + fonttools（`pip install fonttools`；裝了 `brotli` 字型會輸出成 woff2，沒裝就輸出 ttf）。
 - HyperFrames CLI：`npm install -g hyperframes`，再跑 `hyperframes doctor`（Docker、Whisper、Kokoro、MusicGen 都是選配）。
 - 官方 skills：`hyperframes skills update`，做這類片還要 `hyperframes skills update faceless-explainer`。
 - 匿名使用統計預設開啟，問使用者要不要 `hyperframes telemetry disable`。
 - TTS（擇一，問使用者）：
   - **edge-tts（預設）**：`pip install edge-tts`，不需要 GPU，產生時要連網。台灣口音有 `zh-TW-HsiaoChenNeural`（女）、`zh-TW-HsiaoYuNeural`（女）、`zh-TW-YunJheNeural`（男）。
-  - **Breeze TTS 2（進階）**：本機 GPU（約 8 GB VRAM），可以用文字描述來設計聲音，再做聲音複製，口音和情緒的控制最細。
+  - **Breeze TTS 2（進階）**：本機 NVIDIA GPU（約 7.7 GB VRAM，建議 12 GB 以上；模型檔約 7 GB），可以用文字描述來設計聲音，再做聲音複製，口音和情緒的控制最細。
   - 其他引擎也可以：只要能為每一句輸出 `assets/voice/raw/NN.wav`。英文片可以用 HyperFrames 內建的 Kokoro／HeyGen。
 
 ## 1. 研究（有網路搜尋時）
@@ -90,9 +91,11 @@ hyperframes lint && hyperframes check
 
 （`<fe>` = 已安裝的 faceless-explainer skill 資料夾。）字幕每次重建後，都要重跑 `patch_captions.py` 再跑 `theme.py`。`theme.json` 的 `accents` 指定每一格裡哪些元素用強調色（block／fill／text）。
 
+**最後一步才瘦身字型**：`python scripts/subset_fonts.py --project .`。它會只留下片中用到的中文字（CJK 字型從 12–17 MB 降到幾百 KB），並把每一格的 `@font-face` 改指向瘦身後的檔案。任何改動文字、字幕或配色的動作之後都要重跑：`theme.py` 每次都從配色前的原始檔重新套色，原始檔指向的是完整字型，新加的字如果不在瘦身檔裡，就會退回系統字型。
+
 ## 8. 審查（`review-loop`）
 
-- 先 `hyperframes check`，再用 draft 品質輸出整片，在**每個子句結束前 0.15 秒**截一格（取落定的狀態），用 `review-loop/scripts/sheet.py --video … --at …` 拼成 contact sheet，**每一張都要親眼看**。
+- 先 `hyperframes check`，再用 draft 品質輸出整片（`hyperframes render --quality draft --workers <hw_check 建議值>`；審查階段一律用 draft），在**每個子句結束前 0.15 秒**截一格（取落定的狀態），用 `review-loop/scripts/sheet.py --video … --at …` 拼成 contact sheet，**每一張都要親眼看**。
 - 對照 `references/lessons.md` 的檢查表逐項看，修完重新輸出、重新看，直到一輪都沒有問題。
 - 看完才輸出最終版：`hyperframes render --skill=faceless-explainer --quality high --output renders/video.mp4`，再量一次響度。
 
