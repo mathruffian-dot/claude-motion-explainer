@@ -39,7 +39,8 @@ description: 用自然語言做「原理解說動畫影片」的端到端流程�
 **再加問三個顏色**（本技能新增），像簡報版型：
 - **背景色**、**主色**（文字與線稿）、**強調色**（只給答案、結論、關鍵數字、章節卡）。
 - 沒有偏好就推薦：黑底 `#121212`、白字 `#F2F0EA`、橘色強調 `#FF7A1A`。
-- 寫進專案的 `theme.json`（格式見 `templates/theme.example.json`）。
+- **字型**：全片統一用一種字型。預設是**源石黑體 粗體**（GenSeki Gothic Bold，OFL 授權，中文、英文、數字、字幕都用它）。使用者有指定字型就換，但要確認那個字型可以自由使用。
+- 顏色和字型都寫進專案的 `theme.json`（格式見 `templates/theme.example.json` 的 `bg`／`fg`／`accent`／`font`）。
 
 彙整成需求摘要，分「使用者回答」和「我推斷的」兩區，使用者確認後才開工。
 
@@ -48,7 +49,7 @@ description: 用自然語言做「原理解說動畫影片」的端到端流程�
 1. `hyperframes init videos/<kebab-name> --non-interactive --example=blank --skill=faceless-explainer`，接著寫 `BRIEF.md`，然後照 `/faceless-explainer` 的 Step 0–2 做（`capture/extracted/`、選一個 frame preset 產生 `frame.md`）。
 2. **選 preset 時優先選線稿清楚的**（例如 `cobalt-grid`）。它只是「來源配色」，最後會被 `theme.py` 換成使用者的三色。
 3. 在 `frame.md` 加上 **繁體中文覆寫**（字型、字重、字距、行高、投影機最小字級），內容照 `motion-design` 第 5 節。
-4. 跑 `bash scripts/fetch_fonts.sh <project>`，把 Latin 字型和 Noto TC 放進 `assets/fonts/`，**不要依賴 Google Fonts 線上載入**。
+4. 跑 `bash scripts/fetch_fonts.sh <project>`，把源石黑體粗體（從官方 GitHub release 下載）、frame worker 製作時用的 Latin 字型和 Noto TC，全部放進 `assets/fonts/`，**不要依賴 Google Fonts 線上載入**。
 5. 寫 `STORYBOARD.md` 和 `SCRIPT.md`（格式照官方 storyboard-format / script-format）。旁白要**照「子句」切**，每個逗號就是一個畫面揭示的時間點；數字寫成國字（「零點八一秒」），TTS 才不會唸錯。
 
 ## 4. 旁白
@@ -83,13 +84,13 @@ description: 用自然語言做「原理解說動畫影片」的端到端流程�
 node <fe>/scripts/assemble-index.mjs --storyboard ./STORYBOARD.md --hyperframes .
 node <fe>/scripts/captions.mjs build --storyboard ./STORYBOARD.md --audio-meta ./audio_meta.json --hyperframes . --out ./caption_groups.json
 python scripts/patch_captions.py --project .     # 中文字幕字型與粗細（預設粗體 700）
-python scripts/theme.py --project .              # 套用 theme.json 三色（index、每一格、字幕）
+python scripts/theme.py --project .              # 套用 theme.json 的三色與字型（index、每一格、字幕）
 node <fe>/scripts/transitions.mjs inject --storyboard ./STORYBOARD.md --hyperframes .
 node <fe>/scripts/transitions.mjs verify --storyboard ./STORYBOARD.md --index ./index.html
 hyperframes lint && hyperframes check
 ```
 
-（`<fe>` = 已安裝的 faceless-explainer skill 資料夾。）字幕每次重建後，都要重跑 `patch_captions.py` 再跑 `theme.py`。`theme.json` 的 `accents` 指定每一格裡哪些元素用強調色（block／fill／text）。
+（`<fe>` = 已安裝的 faceless-explainer skill 資料夾。）字幕每次重建後，都要重跑 `patch_captions.py` 再跑 `theme.py`。`theme.json` 的 `accents` 指定每一格裡哪些元素用強調色（block／fill／text）；`font` 會把每一格和字幕的所有文字都換成同一個字型和字重，覆蓋 worker 原本寫的字型設定。換字型後字變寬了，要重跑 `hyperframes check` 看有沒有溢出或重疊。
 
 **最後一步才瘦身字型**：`python scripts/subset_fonts.py --project .`。它會只留下片中用到的中文字（CJK 字型從 12–17 MB 降到幾百 KB），並把每一格的 `@font-face` 改指向瘦身後的檔案。任何改動文字、字幕或配色的動作之後都要重跑：`theme.py` 每次都從配色前的原始檔重新套色，原始檔指向的是完整字型，新加的字如果不在瘦身檔裡，就會退回系統字型。
 

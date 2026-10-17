@@ -13,7 +13,7 @@
 
 - [HyperFrames](https://github.com/heygen-com/hyperframes) and its official skills — Apache-2.0, by HeyGen.
 - [GSAP](https://gsap.com) — loaded from a CDN by each composition; see GSAP's license.
-- Fonts, fetched by `scripts/fetch_fonts.sh` from the [@fontsource](https://fontsource.org) npm
+- Fonts, fetched by `scripts/fetch_fonts.sh`: [GenSeki Gothic / 源石黑體](https://github.com/ButTaiwan/genseki-font) (ButTaiwan, the default face) from its GitHub release, and from the [@fontsource](https://fontsource.org) npm
   packages or the system: Newsreader, DM Mono, Hanken Grotesk, Noto Sans TC, Noto Serif TC — all
   SIL Open Font License 1.1.
 - [edge-tts](https://github.com/rany2/edge-tts) — GPL-3.0 Python package that calls Microsoft's

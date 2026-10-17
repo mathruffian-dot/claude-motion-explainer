@@ -43,7 +43,7 @@ cp -r claude-motion-explainer/skills/* ~/.claude/skills/        # Claude Code
 # Codex / 其他 agent：複製到 ~/.agents/skills/
 ```
 
-字型（開源 OFL）不放在 repo 裡，每個專案要用時，跑一次 `bash skills/motion-explainer/scripts/fetch_fonts.sh <專案資料夾>` 就會放好。影片做完、正式輸出前，`subset_fonts.py` 會把中文字型瘦身成只含片中用到的字（12–17 MB 降到幾百 KB）。
+字型（開源 OFL）不放在 repo 裡，每個專案要用時，跑一次 `bash skills/motion-explainer/scripts/fetch_fonts.sh <專案資料夾>` 就會放好。預設全片使用 **[源石黑體](https://github.com/ButTaiwan/genseki-font) 粗體**（GenSeki Gothic Bold），中文、英文、數字、字幕都是它。影片做完、正式輸出前，`subset_fonts.py` 會把字型瘦身成只含片中用到的字（源石黑體從 15 MB 降到約 140 KB）。
 
 ## 怎麼用
 
@@ -55,15 +55,16 @@ cp -r claude-motion-explainer/skills/* ~/.claude/skills/        # Claude Code
 
 Agent 會先問你播放平台、長度、旁白聲音和**三個顏色**（背景色、主色、強調色，預設是黑底、白字、橘色重點），確認後才開始做。做完會交給你 MP4 和一張總覽圖。
 
-## 三色主題
+## 三色主題與字型
 
-像簡報版型一樣，由你決定三個顏色：
+像簡報版型一樣，由你決定三個顏色和一個字型：
 
 ```json
-{ "bg": "#121212", "fg": "#F2F0EA", "accent": "#FF7A1A" }
+{ "bg": "#121212", "fg": "#F2F0EA", "accent": "#FF7A1A",
+  "font": { "family": "GenSekiGothic", "file": "GenSekiGothic2TW-B.otf", "weight": 700 } }
 ```
 
-強調色只給「答案、結論、關鍵數字、章節卡」。想換一組顏色，改 `theme.json` 再跑 `python scripts/theme.py --project <專案>`，然後重新輸出就好，不用重做動畫。
+強調色只給「答案、結論、關鍵數字、章節卡」。想換顏色或字型，改 `theme.json` 再跑 `python scripts/theme.py --project <專案>`，然後重新輸出就好，不用重做動畫。
 
 ## English
 

@@ -11,6 +11,9 @@ theme.json maps every source color onto the three theme colors, like a slide tem
      fill  -> accent background             (the one bar that carries the claim)
      text  -> accent text                   (hero numbers)
   captions: the active word becomes an accent block
+  font (optional, theme.json "font"): ONE face for every piece of text in every frame and the
+     captions, e.g. {"family": "GenSekiGothic", "file": "GenSekiGothic2TW-B.otf", "weight": 700}
+     (the file lives in assets/fonts/). Overrides whatever stacks the frame workers wrote.
 
 The first run keeps pristine copies in .hyperframes/pre-theme/; every later run starts from those,
 so the theme can be changed and re-applied any number of times. Also recolors index.html's ground.
@@ -68,6 +71,17 @@ def caption_css(th):
             f"  .caption-word.is-spoken {{ color: {fg} !important; }}\n")
 
 
+def font_css(th, scope):
+    """One face for all text. scope: '#root' for frames, '.caption-line' for captions."""
+    fo = th.get("font")
+    if not fo:
+        return ""
+    fam, w = fo["family"], fo.get("weight", 700)
+    return (f'\n  /* theme font (theme.py) */\n'
+            f'  @font-face {{ font-family: "{fam}"; src: url("assets/fonts/{fo["file"]}"); font-weight: 100 900; }}\n'
+            f'  {scope}, {scope} * {{ font-family: "{fam}", sans-serif !important; font-weight: {w} !important; }}\n')
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--project", default=".")
@@ -93,10 +107,11 @@ def main():
         text = recolor(k.read_text(encoding="utf-8"), th)
         if f.name == "captions.html":
             i = text.rindex("</style>")
-            text = text[:i] + caption_css(th) + text[i:]
-        elif f.parent.name == "frames" and th.get("accents", {}).get(f.stem):
+            text = text[:i] + caption_css(th) + font_css(th, ".caption-line") + text[i:]
+        elif f.parent.name == "frames":
             i = text.index("</style>")
-            text = text[:i] + accent_css(th["accents"][f.stem], th) + text[i:]
+            accents = th.get("accents", {}).get(f.stem)
+            text = text[:i] + (accent_css(accents, th) if accents else "") + font_css(th, "#root") + text[i:]
         f.write_text(text, encoding="utf-8")
         print("themed", f.relative_to(project))
     print(f"theme: bg {th['bg']} / fg {th['fg']} / accent {th['accent']}")

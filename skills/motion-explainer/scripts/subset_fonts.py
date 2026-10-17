@@ -32,17 +32,25 @@ def compositions(project):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--project", default=".")
-    ap.add_argument("--fonts", nargs="+", default=["NotoSansTC-VF.ttf", "NotoSerifTC-VF.ttf"])
+    ap.add_argument("--fonts", nargs="+",
+                    default=["GenSekiGothic2TW-B.otf", "NotoSansTC-VF.ttf", "NotoSerifTC-VF.ttf"])
     ap.add_argument("--restore", action="store_true")
     a = ap.parse_args()
     project = Path(a.project).resolve()
     fonts_dir = project / "assets" / "fonts"
     files = compositions(project)
 
+    def full_name(stem):
+        for ext in (".otf", ".ttf"):
+            if (fonts_dir / f"{stem}{ext}").exists():
+                return f"{stem}{ext}"
+        return f"{stem}.ttf"
+
     if a.restore:
         for f in files:
             t = f.read_text(encoding="utf-8")
-            t2 = re.sub(r"assets/fonts/([\w.-]+?)\.subset\.(?:woff2|ttf)", lambda m: f"assets/fonts/{m.group(1)}.ttf", t)
+            t2 = re.sub(r"assets/fonts/([\w.-]+?)\.subset\.(?:woff2|ttf|otf)",
+                        lambda m: f"assets/fonts/{full_name(m.group(1))}", t)
             if t2 != t:
                 f.write_text(t2, encoding="utf-8")
         print("url()s point at the full fonts again")
@@ -51,9 +59,9 @@ def main():
     from fontTools import subset
     try:
         import brotli  # noqa: F401
-        flavor, ext = "woff2", "woff2"
+        flavor = "woff2"
     except ImportError:
-        flavor, ext = None, "ttf"
+        flavor = None  # keep the source container: .ttf stays .ttf, CFF .otf stays .otf
 
     chars = set(EXTRA)
     for f in files:
@@ -67,7 +75,7 @@ def main():
         if not src.exists():
             print("skip (not found):", name)
             continue
-        out = fonts_dir / f"{src.stem}.subset.{ext}"
+        out = fonts_dir / f"{src.stem}.subset.{'woff2' if flavor else src.suffix.lstrip('.')}"
         opts = subset.Options()
         opts.flavor = flavor
         opts.layout_features = ["*"]
@@ -86,7 +94,7 @@ def main():
         t2 = t
         for full, small in renames.items():
             stem = Path(full).stem
-            t2 = re.sub(rf"assets/fonts/{re.escape(stem)}(?:\.subset\.(?:woff2|ttf)|\.ttf)", f"assets/fonts/{small}", t2)
+            t2 = re.sub(rf"assets/fonts/{re.escape(stem)}(?:\.subset\.(?:woff2|ttf|otf)|\.(?:ttf|otf))", f"assets/fonts/{small}", t2)
         if t2 != t:
             f.write_text(t2, encoding="utf-8")
             print("repointed", f.relative_to(project))

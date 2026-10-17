@@ -1,8 +1,13 @@
 {
-  "_comment": "Three-color theme (like a slide template): bg = background, fg = main (text + line art), accent = the one emphasis color. 'source' = the frame preset's palette that theme.py replaces (here cobalt-grid). 'accents' = per-frame selectors that take the accent (block / fill / text).",
+  "_comment": "Three colors + one font (like a slide template): bg = background, fg = main (text + line art), accent = the one emphasis color. 'source' = the frame preset's palette that theme.py replaces (here cobalt-grid). 'accents' = per-frame selectors that take the accent (block / fill / text). 'font' = one face for all text (default GenSeki Gothic Bold / 源石黑體 粗體, fetched by fetch_fonts.sh).",
   "bg": "#121212",
   "fg": "#F2F0EA",
   "accent": "#FF7A1A",
+  "font": {
+    "family": "GenSekiGothic",
+    "file": "GenSekiGothic2TW-B.otf",
+    "weight": 700
+  },
   "source": {
     "ink": [
       "#1F2BE0"
