@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300" fill="none" stroke="#1F2BE0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+  <!-- Shared invented supercar side view (示意圖). No logo. ViewBox 0 0 1000 300; road line at y=262.
+       Copy these paths verbatim into every frame that shows the car; scale the whole <g> uniformly. -->
+  <g id="car">
+    <!-- body: low wedge, rear at left, nose at right -->
+    <path id="car-body" d="M 60 222 L 60 168 C 60 152 76 142 104 140 L 360 132 C 410 104 460 98 520 98 C 580 98 620 110 668 134 L 898 176 C 934 184 950 198 950 210 L 946 222 L 834 222 A 54 54 0 1 0 726 222 L 284 222 A 54 54 0 1 0 176 222 Z"/>
+    <!-- side window -->
+    <path id="car-window" d="M 392 132 C 430 112 470 108 520 108 C 570 108 604 118 640 134 Z" stroke-width="2"/>
+    <!-- wheels: rear (230,226) and front (780,226) -->
+    <g id="car-wheels">
+      <circle cx="230" cy="226" r="36"/><circle cx="230" cy="226" r="13" stroke-width="2"/>
+      <circle cx="780" cy="226" r="36"/><circle cx="780" cy="226" r="13" stroke-width="2"/>
+    </g>
+  </g>
+  <!-- cutaway parts: show only in cutaway frames -->
+  <g id="car-cutaway" stroke-width="2">
+    <!-- floor line (inner) -->
+    <path id="car-floor" d="M 290 208 L 720 208"/>
+    <!-- four fan rotors along the floor, centers (360,214) (450,214) (540,214) (630,214), r=12 -->
+    <g id="car-fans">
+      <circle cx="360" cy="214" r="12"/><path d="M 348 214 L 372 214 M 360 202 L 360 226"/>
+      <circle cx="450" cy="214" r="12"/><path d="M 438 214 L 462 214 M 450 202 L 450 226"/>
+      <circle cx="540" cy="214" r="12"/><path d="M 528 214 L 552 214 M 540 202 L 540 226"/>
+      <circle cx="630" cy="214" r="12"/><path d="M 618 214 L 642 214 M 630 202 L 630 226"/>
+    </g>
+    <!-- skirts: rear (x 62..72) and front (x 934..944), from floor y=222 down to road y=260 -->
+    <g id="car-skirts">
+      <rect x="62" y="222" width="10" height="38"/>
+      <rect x="934" y="222" width="10" height="38"/>
+    </g>
+    <!-- thruster nozzles: rear main (pointing back, at x=60) and corner down-thrusters -->
+    <g id="car-thrusters">
+      <path id="thr-rear" d="M 60 186 L 40 180 L 40 204 L 60 198 Z"/>
+      <path id="thr-down-rear" d="M 112 222 L 106 236 L 130 236 L 124 222 Z"/>
+      <path id="thr-down-front" d="M 878 222 L 872 236 L 896 236 L 890 222 Z"/>
+    </g>
+  </g>
+  <!-- road line -->
+  <path id="road" d="M 0 262 L 1000 262" stroke-width="2"/>
+</svg>

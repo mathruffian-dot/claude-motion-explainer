@@ -1,0 +1,273 @@
+{
+  "_comment": "Example from the Tesla Roadster explainer: per frame, [clause index, what appears] pairs. Clause indexes point into audio_meta.json voices[].words.",
+  "1": {
+    "blueprint": "kinetic-type-beats (Adapt)",
+    "note": "keep the full-screen statement-per-beat build onto a payoff; the payoff is a question mark instead of a spring-pop logo",
+    "rules": "discrete-text-sequence, counting-dynamic-scale",
+    "focal": "三個大字事實（倒掛／飛起來／0.81 秒）與最後的問號",
+    "roles": "graph-paper grid + top/bottom hairlines = background · fact words = foreground subject · 「0→60 mph ≈ 97 km/h · Tesla 宣稱」 chrome = supporting",
+    "sfx": "soft whoosh on each fact, low thud on the question mark",
+    "scenes": [
+      [
+        0,
+        "Centered. Only the grid and hairlines; 「倒掛」 enters as one display-hero word, upside down, and flips 180° to upright on `move` ease as the VO says 倒掛 — the flip IS the idea."
+      ],
+      [
+        1,
+        "Hard-cut word swap: 「倒掛」 is replaced in place by 「飛起來」, which rises ~6% of frame height and settles (enter ease)."
+      ],
+      [
+        2,
+        "Swap again: a vbig-numeral 「0」 appears and counts up through 「0.81 秒」 across the 不到一秒 / 衝到時速九十七公里 clauses; the small chrome tag 「0→60 mph ≈ 97 km/h · Tesla 宣稱」 types in under it."
+      ],
+      [
+        4,
+        "The three facts collapse into a single left-aligned stack (倒掛 / 飛起來 / 0.81 秒, headline size) while a large 「？」 in inverted cobalt block lands right of center on the 這是一台車 cue; hold still to the end."
+      ]
+    ]
+  },
+  "2": {
+    "blueprint": "compose",
+    "note": "frame-then-fill: the car silhouette draws on, then three numbered slots fill one by one",
+    "rules": "svg-path-draw, dynamic-content-sequencing",
+    "focal": "跑車側面剪影（示意圖）",
+    "roles": "grid = background · car line art = foreground subject (≈55% width, centered, upper half) · three numbered slots = supporting (row beneath the car) · source chrome = supporting",
+    "sfx": "pen-scratch tick as the silhouette draws, three soft ticks for the slots",
+    "scenes": [
+      [
+        0,
+        "The car silhouette self-draws (SVG path draw, wheels last) across the 特斯拉…Roadster clause; DM Mono chrome 「2026/10/15 發表 · 示意圖」 appears top-left after the draw completes."
+      ],
+      [
+        1,
+        "Under the car three empty square slots appear with numerals ①②③ and the labels 倒掛／滯空／加速 (staggered ~0.2 s) as the VO says 三個神奇配備."
+      ],
+      [
+        2,
+        "On 國中理化學過的原理 each slot gains its principle in Newsreader/Noto Serif: 壓力差 → 作用力與反作用力 → 摩擦力, staggered; slot ① inverts briefly to cobalt as a pointer to the next chapter. Bottom-left chrome 「性能數字皆為 Tesla 發表會宣稱」. Hold."
+      ]
+    ]
+  },
+  "3": {
+    "blueprint": "compose",
+    "note": "cutaway diagram built layer by layer",
+    "rules": "svg-path-draw, svg-icon-enrichment, dynamic-content-sequencing",
+    "focal": "車子剖面圖：車底四具風扇、裙邊、低壓區",
+    "roles": "grid = background · car cutaway on a road line = foreground subject (≈60% width, asymmetric 60/40 left) · pressure arrows + 「低壓」「大氣壓」 labels = supporting (right rail labels)",
+    "sfx": "fan spin-up whir under the fan clause, a soft air-seal 'thunk' on the skirts",
+    "scenes": [
+      [
+        0,
+        "Chapter card: 「① 倒掛」 slams in as an inverted cobalt block top-left (display-chapter), the car silhouette from frame 2 is already on the road line."
+      ],
+      [
+        2,
+        "The car turns into a cutaway: the underbody line draws, then four small round fan rotors pop in along the floor (stagger ~0.09 s) and start spinning (live SVG, continuous)."
+      ],
+      [
+        3,
+        "Airflow: dotted cobalt lines stream from under the car out through the fans and away (dash-flow); the dots under the car thin out."
+      ],
+      [
+        4,
+        "Two skirt plates slide down at the front and rear edges and seal the gap to the road; label 「裙邊」 ticks in."
+      ],
+      [
+        5,
+        "The underbody region fills with sparse dots and the label 「低壓」 appears beneath the car."
+      ],
+      [
+        6,
+        "Dense arrows from above and the sides push toward the car body (draw-on, stagger), label 「大氣壓」 on the right rail; the whole car settles 4px down onto the road on `land` ease. Hold with only fans + airflow alive."
+      ]
+    ]
+  },
+  "4": {
+    "blueprint": "compose",
+    "note": "worked example: the same cutaway flips upside down while a formula assembles term by term",
+    "rules": "svg-icon-enrichment, counting-dynamic-scale, stat-bars-and-fills, dynamic-content-sequencing",
+    "focal": "倒掛的車 + 逐行出現的估算算式",
+    "roles": "grid = background · inverted car on a ceiling track = foreground subject (left 55%) · formula column = foreground secondary (right 40%) · 「估算」 tag = supporting",
+    "sfx": "slow rotation whoosh as the stage flips, typewriter ticks for each formula line",
+    "scenes": [
+      [
+        0,
+        "The whole frame-3 stage (car + road line) rotates 180° on `move` ease so the road becomes a ceiling track and the car hangs upside down; fans keep spinning. A big 「？」 sits beside it on 要多大的吸力."
+      ],
+      [
+        1,
+        "Formula column, line 1 assembles: 「1,700 kg → 重力 ≈ 16,700 N」 (numbers count up), DM Mono units."
+      ],
+      [
+        2,
+        "Line 2: 「÷ 車底面積 4 m²」 and a dashed rectangle outlines the car floor area in the diagram."
+      ],
+      [
+        3,
+        "Line 3 lands: 「= 壓力差 ≈ 4,200 Pa」, then the result line inverts into a cobalt block 「≈ 大氣壓的 4%」 with a pixel-stack bar showing 4 of 100 cells filled; tag 「估算」."
+      ],
+      [
+        4,
+        "Hold the finished stage still ≥ 1 s (only fans alive) through 就能倒掛不掉下來."
+      ]
+    ]
+  },
+  "5": {
+    "blueprint": "compose",
+    "note": "action/reaction paired arrows on the cutaway",
+    "rules": "svg-path-draw, svg-icon-enrichment, dynamic-content-sequencing",
+    "focal": "四角向下推進器噴氣 + 一對大小相等、方向相反的箭頭",
+    "roles": "grid = background · car cutaway (thrusters visible at the four corners) = foreground subject (centered, ≈55%) · paired arrows + labels = foreground secondary · 「高壓空氣 ≈ 10,000 psi · 不燃燒」 chip = supporting",
+    "sfx": "sharp compressed-air hiss on the jet, soft rising tone as the car lifts",
+    "scenes": [
+      [
+        0,
+        "Chapter card 「② 滯空」 slams in as an inverted cobalt block top-left; the car is back upright on the road line, thrusters drawn as small nozzles at the corners."
+      ],
+      [
+        2,
+        "A chip 「SpaceX 冷氣推進器」 with sub-label 「高壓空氣 ≈ 10,000 psi · 不燃燒 · Tesla 宣稱」 types in at upper right; a thin leader line points to a nozzle."
+      ],
+      [
+        3,
+        "The nozzles fire: short-dash cobalt jets burst downward from each corner (dash-flow, fast)."
+      ],
+      [
+        4,
+        "A thick down arrow labeled 「氣體 ↓ 作用力」 draws under the car."
+      ],
+      [
+        5,
+        "A matching up arrow 「車子 ↑ 反作用力」 draws above the car at the same length, and the car lifts off the road line by ~8% of frame height on `enter` ease."
+      ],
+      [
+        6,
+        "A caption block 「大小相等 · 方向相反」 inverts in cobalt between the arrows; hold with jets alive."
+      ]
+    ]
+  },
+  "6": {
+    "blueprint": "compose",
+    "note": "a resource bar drains while the hop resolves",
+    "rules": "stat-bars-and-fills, svg-icon-enrichment",
+    "focal": "氣瓶存量 pixel-stack 條從滿到空",
+    "roles": "grid = background · airborne car = foreground subject (left 55%) · tank pixel-stack bar + 「幾秒」 timeline = foreground secondary (right rail) · 「跳一下 ≠ 飛行」 = payoff text",
+    "sfx": "hiss that thins out as the tank drains, a soft landing thump",
+    "scenes": [
+      [
+        0,
+        "The car hangs in the air with jets firing; on the right a vertical pixel-stack tank bar 「氣瓶」 appears full (cells on)."
+      ],
+      [
+        1,
+        "Cells switch off top-down in quick steps across 全力噴只撐得了幾秒; a mono timeline under it is marked only 「0 s … 幾秒」."
+      ],
+      [
+        2,
+        "Jets cut as the bar empties; the car drops back to the road line on `land` ease (one small settle) — 跳一下."
+      ],
+      [
+        3,
+        "Small attitude arrows flick at the front and rear nozzles (one quick tilt-and-level) on 控制姿態."
+      ],
+      [
+        4,
+        "Payoff text 「跳一下 ≠ 飛行」 (display-chapter, the 「≠」 in an inverted block) lands upper right; hold still."
+      ]
+    ]
+  },
+  "7": {
+    "blueprint": "dataviz-countup (Adapt)",
+    "note": "keep numbers-as-hero with a bar that grows to land one hero metric; the surface is a horizontal g-scale of pixel-stack cells instead of a ring",
+    "rules": "stat-bars-and-fills, counting-dynamic-scale, dynamic-content-sequencing",
+    "focal": "水平加速度刻度尺（g）上的兩條 pixel-stack 長條",
+    "roles": "grid = background · g-scale strip = foreground subject (full-width strip, centered vertically ≈ y 450) · formula 「摩擦力 = μ × 正向力」 = supporting (top-left) · value labels = supporting",
+    "sfx": "tick per scale mark, a rising tone as the 3.4 g bar overshoots the first",
+    "scenes": [
+      [
+        0,
+        "Chapter card 「③ 加速」 slams in as an inverted cobalt block top-left."
+      ],
+      [
+        2,
+        "The formula 「摩擦力 = μ × 正向力」 assembles term by term at top-left; a full-width scale strip draws with ticks 0 / 1 / 2 / 3 / 4 g (DM Mono)."
+      ],
+      [
+        4,
+        "Bar ① grows cell by cell to 1.5 g, labelled 「頂級跑車輪胎 ≈ 1.5 g → 0→100 約 1.9 秒」 with tag 「估算」; the 1.5 g value counts up."
+      ],
+      [
+        6,
+        "Bar ② (inverted cobalt cells) grows past bar ① all the way to 3.4 g while 「0.81 秒 → 97 km/h · Tesla 宣稱」 types above it; the 3.4 g value counts up and lands as a vbig-numeral."
+      ],
+      [
+        7,
+        "A bracket marks the gap between 1.5 g and 3.4 g with 「× 2.3」; hold still ≥ 1 s."
+      ]
+    ]
+  },
+  "8": {
+    "blueprint": "compose",
+    "note": "build-up on the same g-scale: two boosts stack onto the tire bar until they reach 3.4 g",
+    "rules": "stat-bars-and-fills, dynamic-content-sequencing",
+    "focal": "同一條 g 刻度尺：輪胎長條 + 兩段補強",
+    "roles": "grid = background · g-scale strip (same as frame 7) = foreground subject · the formula with 「正向力」 = foreground secondary (upper left) · small car icons for each boost = supporting",
+    "sfx": "air-seal thunk on the suction boost, compressed-air burst on the thruster boost, a clean ding when the stack reaches 3.4 g",
+    "scenes": [
+      [
+        0,
+        "The frame-7 scale holds; bar ② fades to a dashed outline 「目標 3.4 g」 and a 「？」 sits at its end on 怎麼做到."
+      ],
+      [
+        1,
+        "Callback to frame 3: a tiny cutaway car with downward pressure arrows appears above the strip, label 「吸地力」."
+      ],
+      [
+        2,
+        "In the formula, 「正向力」 scales up and inverts to a cobalt block (emphasis by inversion)."
+      ],
+      [
+        3,
+        "Bar ① extends: a second segment of cells stacks onto the 1.5 g tire bar, labelled 「摩擦力變大」."
+      ],
+      [
+        4,
+        "A thick forward arrow from a rear thruster icon pushes a third segment onto the bar, labelled 「推進器直接推 · 不經過輪胎」."
+      ],
+      [
+        5,
+        "The stacked bar reaches the dashed 3.4 g target, the outline turns solid; brief hold."
+      ]
+    ]
+  },
+  "9": {
+    "blueprint": "titlecard-reveal (Adapt)",
+    "note": "one restrained reveal, then a still hold; content is the three principle slots from frame 2 plus one closing line",
+    "rules": "dynamic-content-sequencing, svg-path-draw",
+    "focal": "三個原理格子排成一列",
+    "roles": "grid = background · three principle slots (triptych, upper half) = foreground subject · closing line = foreground secondary · source chrome = supporting",
+    "sfx": "three soft ticks, then silence",
+    "scenes": [
+      [
+        0,
+        "Triptych: slot 「壓力差」 appears (slide-up crossfade) in the left third."
+      ],
+      [
+        1,
+        "Slot 「作用力與反作用力」 appears in the middle third."
+      ],
+      [
+        2,
+        "Slot 「摩擦力」 appears in the right third."
+      ],
+      [
+        3,
+        "The car silhouette from frame 2 draws on small beneath the slots."
+      ],
+      [
+        4,
+        "Closing line 「神奇配備 = 你學過的物理」 lands centered below (display-chapter); chrome 「性能數字皆為 Tesla 2026/10/15 發表會宣稱 · 量產目標 2028 年」 bottom-left above the caption band. Hold still to the end."
+      ]
+    ]
+  }
+}

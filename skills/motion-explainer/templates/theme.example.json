@@ -1,0 +1,96 @@
+{
+  "_comment": "Three-color theme (like a slide template): bg = background, fg = main (text + line art), accent = the one emphasis color. 'source' = the frame preset's palette that theme.py replaces (here cobalt-grid). 'accents' = per-frame selectors that take the accent (block / fill / text).",
+  "bg": "#121212",
+  "fg": "#F2F0EA",
+  "accent": "#FF7A1A",
+  "source": {
+    "ink": [
+      "#1F2BE0"
+    ],
+    "ink_rgb": "31,43,224",
+    "paper": [
+      "#F0EBDE",
+      "#E6E0CE"
+    ],
+    "ink_soft": [
+      "#5560E5",
+      "#4F5ADB"
+    ]
+  },
+  "font_stacks": {
+    "NotoSerifTC": "Newsreader",
+    "NotoSansTC": "Hanken Grotesk"
+  },
+  "hairlines": {
+    "top": "3cqw",
+    "bottom": "880px"
+  },
+  "caption": {
+    "cjk": "NotoSansTC",
+    "cjk_file": "NotoSansTC-VF.ttf",
+    "latin": "Hanken Grotesk",
+    "weight": 700
+  },
+  "accents": {
+    "01-hook": {
+      "block": [
+        "[id=\"01-hook-q\"]"
+      ],
+      "text": [
+        "[id=\"01-hook-num\"]",
+        "[id=\"01-hook-sec\"]"
+      ]
+    },
+    "02-thesis": {
+      "block": [
+        "[class~=\"02-thesis-fill\"]"
+      ]
+    },
+    "03-suction": {
+      "block": [
+        "[id=\"03-suction-card\"]"
+      ]
+    },
+    "04-suction-math": {
+      "block": [
+        "[id=\"04-suction-math-fill\"]"
+      ]
+    },
+    "05-thrusters": {
+      "block": [
+        "[id=\"05-thrusters-card\"]",
+        "[id=\"05-thrusters-eq\"]"
+      ]
+    },
+    "06-limits": {
+      "block": [
+        "[id=\"06-limits-neq\"]"
+      ]
+    },
+    "07-grip-limit": {
+      "block": [
+        "#\\30 7-grip-limit-chap"
+      ],
+      "fill": [
+        ".\\30 7-grip-limit-cell2"
+      ],
+      "text": [
+        "#\\30 7-grip-limit-bignum",
+        "#\\30 7-grip-limit-bigunit"
+      ]
+    },
+    "08-breakthrough": {
+      "block": [
+        "[id=\"08-breakthrough-chip-inv\"]"
+      ],
+      "fill": [
+        "[class~=\"08-breakthrough-cell-solid\"]"
+      ]
+    },
+    "09-recap": {
+      "block": [
+        "[id=\"09-recap-block\"]"
+      ]
+    }
+  }
+}

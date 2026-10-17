@@ -1,0 +1,101 @@
+---
+name: motion-explainer
+description: 用自然語言做「原理解說動畫影片」的端到端流程（HyperFrames + 中文旁白 + 字幕 + 三色主題 + 自我審查），產出可直接上課投影或上傳 YouTube 的 MP4。只要使用者要做解說動畫、科普動畫、原理動畫、教學動畫、explainer video、motion graphics 解說片，或說「上網查資料做一支解說 X 的動畫」，就一定要使用此技能。觸發情境包含：「做一個解說動畫」、「做科普影片」、「把這個原理做成動畫」、「做一支 90 秒的教學動畫」、「explain X as an animated video」。
+---
+
+# Motion explainer — 從一句話到一支解說動畫
+
+這個技能把「上網查資料 → 寫腳本 → 中文旁白 → 一格一格做動畫 → 字幕 → 配色 → 自我審查 → 輸出 MP4」串成一條固定流程。它站在三個東西的肩膀上：
+
+- **HyperFrames**（HeyGen 開源，HTML + GSAP 輸出 MP4）與它的官方 skills，特別是 `/hyperframes` 入口和 `/faceless-explainer` 工作流。**做法以官方為準。**
+- 本 repo 的 **`motion-design`**（品味規則：緩動、節奏、停留、中文排版）與 **`review-loop`**（contact sheet 自我審查）。**好不好看以這兩個為準。**
+- 本資料夾 `scripts/` 的工具：把官方流程沒處理好的中文旁白、字幕、字型一致性和三色主題補起來。
+
+`references/lessons.md` 是實戰踩過的坑，**動工前必讀**，每一條都在第一支片裡真的發生過。
+
+## 0. 環境檢查（第一次用時）
+
+- Node.js 22+、ffmpeg/ffprobe、Python 3 + Pillow。
+- HyperFrames CLI：`npm install -g hyperframes`，再跑 `hyperframes doctor`（Docker、Whisper、Kokoro、MusicGen 都是選配）。
+- 官方 skills：`hyperframes skills update`，做這類片還要 `hyperframes skills update faceless-explainer`。
+- 匿名使用統計預設開啟，問使用者要不要 `hyperframes telemetry disable`。
+- TTS（擇一，問使用者）：
+  - **edge-tts（預設）**：`pip install edge-tts`，不需要 GPU，產生時要連網。台灣口音有 `zh-TW-HsiaoChenNeural`（女）、`zh-TW-HsiaoYuNeural`（女）、`zh-TW-YunJheNeural`（男）。
+  - **Breeze TTS 2（進階）**：本機 GPU（約 8 GB VRAM），可以用文字描述來設計聲音，再做聲音複製，口音和情緒的控制最細。
+  - 其他引擎也可以：只要能為每一句輸出 `assets/voice/raw/NN.wav`。英文片可以用 HyperFrames 內建的 Kokoro／HeyGen。
+
+## 1. 研究（有網路搜尋時）
+
+- 搜尋主題的最新資料，至少兩個獨立來源。數字對不上的地方要寫下來，取來源一致的那個。
+- 每個數字分成三類，之後畫面上都要標：**官方宣稱**／**實測或報導**／**自己的估算**。
+- 自己做簡單物理或數學估算，讓觀眾「算得出來」，那是教學片最有價值的部分。估算一定要拿現實比對（例如：「一般車最多 1.2 g」被市售車 1.8 秒破百推翻，要改成 1.5 g）。
+- 不用品牌照片和 logo；主角用自己畫的示意圖，標「示意圖」。
+
+## 2. 需求訪談（照 `/hyperframes` 的 intent layer，一次問完）
+
+一定要確認：播放平台（決定比例：上課／YouTube → 16:9）、長度（建議 60–90 秒，旁白長度會決定實際片長）、要不要旁白（推薦要）、要不要先審分鏡、自動化還是一起邊做邊調。
+
+**再加問三個顏色**（本技能新增），像簡報版型：
+- **背景色**、**主色**（文字與線稿）、**強調色**（只給答案、結論、關鍵數字、章節卡）。
+- 沒有偏好就推薦：黑底 `#121212`、白字 `#F2F0EA`、橘色強調 `#FF7A1A`。
+- 寫進專案的 `theme.json`（格式見 `templates/theme.example.json`）。
+
+彙整成需求摘要，分「使用者回答」和「我推斷的」兩區，使用者確認後才開工。
+
+## 3. 建專案與分鏡
+
+1. `hyperframes init videos/<kebab-name> --non-interactive --example=blank --skill=faceless-explainer`，接著寫 `BRIEF.md`，然後照 `/faceless-explainer` 的 Step 0–2 做（`capture/extracted/`、選一個 frame preset 產生 `frame.md`）。
+2. **選 preset 時優先選線稿清楚的**（例如 `cobalt-grid`）。它只是「來源配色」，最後會被 `theme.py` 換成使用者的三色。
+3. 在 `frame.md` 加上 **繁體中文覆寫**（字型、字重、字距、行高、投影機最小字級），內容照 `motion-design` 第 5 節。
+4. 跑 `bash scripts/fetch_fonts.sh <project>`，把 Latin 字型和 Noto TC 放進 `assets/fonts/`，**不要依賴 Google Fonts 線上載入**。
+5. 寫 `STORYBOARD.md` 和 `SCRIPT.md`（格式照官方 storyboard-format / script-format）。旁白要**照「子句」切**，每個逗號就是一個畫面揭示的時間點；數字寫成國字（「零點八一秒」），TTS 才不會唸錯。
+
+## 4. 旁白
+
+1. 產生 `assets/voice/raw/NN.wav`（每句一個檔，NN 是分鏡格號）：
+   - **edge-tts**：`python scripts/edge_tts_voice.py --project <p> --voice zh-TW-HsiaoChenNeural [--rate -5%]`。全片用同一個 voice，聲音天然一致；`--list zh-TW` 可以列出所有聲音。
+   - **Breeze TTS 2**：`python scripts/breeze_voice.py --project <p> --breeze-repo … --model … --voice "<聲音描述>" --only-ref`，先設計**一個**參考聲音讓使用者聽，確認後再拿掉 `--only-ref` 產生全部句子（每一句都複製這個參考聲音）。如果有批次 runner，改用 `scripts/tts_jobs.py` 產生工作清單。
+   - 使用者還沒裝、或不確定要選哪一個：照 `references/tts-setup.md` 給建議，一步一步確認，不要擅自安裝。
+2. **先讓使用者試聽前一兩句**，口音與情緒由使用者用耳朵決定，不拿分數代替。不滿意就換一個 voice 或改語速，刪掉舊的 WAV 再重新產生。
+3. `python scripts/voice_meta.py --project <p>`：去頭尾靜音、量出每個子句的時間、寫 `audio_meta.json`。
+4. `node <faceless-explainer>/scripts/audio.mjs sync-durations --audio-meta ./audio_meta.json --storyboard ./STORYBOARD.md`
+5. 響度：最後成片要約 −14 LUFS、true peak ≤ −1 dBFS。旁白太小聲就統一加同樣的增益加 limiter，保留各句之間的相對音量。
+
+## 5. 鏡頭設計（Step 4）
+
+- 在 `shots.json`（見 `templates/shots.example.json`）裡，每格用「第幾個子句 → 畫面上出現什麼」來寫，跑 `python scripts/apply_shots.py --project <p>` 換算成真實秒數，寫回 `STORYBOARD.md`。
+- `blueprint` 欄位只能是 `<id> (Adapt)`、`<id> (Reproduce)` 或 `compose`，說明另外放在 `note`。
+- 先用 `hyperframes catalog --query` 找現成元件，找不到再自己畫。
+- **會在多格重複出現的主角（車、人、儀器）先畫成一個共用 SVG**，固定各部件的座標，所有 worker 都必須照抄。不這樣做，每格的主角都會長得不一樣。
+
+## 6. 平行做每一格
+
+1. `node <faceless-explainer>/scripts/frame-packets.mjs --project <p> --storyboard <p>/STORYBOARD.md`
+2. 從 `templates/dispatch_context.md` 複製一份到 `.hyperframes/frame-packets/_dispatch_context.md`，把專案的值填進去：Video direction、共用素材、時間規則、字型。
+3. 每一格派一個 sub-agent，全部平行。prompt 依序讀：`_role.md` → `_dispatch_context.md` → 該格 packet → `frame.md` → 共用素材。
+4. **相鄰格要接續同一個畫面時**（例如同一條刻度尺），先做完的那一格回報的精確幾何，要立刻轉給還在做的那一格。
+5. 全部回來以後：`python scripts/unify_frames.py --project <p>`，統一字型和髮絲線位置。
+
+## 7. 組裝、字幕、配色
+
+```bash
+node <fe>/scripts/assemble-index.mjs --storyboard ./STORYBOARD.md --hyperframes .
+node <fe>/scripts/captions.mjs build --storyboard ./STORYBOARD.md --audio-meta ./audio_meta.json --hyperframes . --out ./caption_groups.json
+python scripts/patch_captions.py --project .     # 中文字幕字型與粗細（預設粗體 700）
+python scripts/theme.py --project .              # 套用 theme.json 三色（index、每一格、字幕）
+node <fe>/scripts/transitions.mjs inject --storyboard ./STORYBOARD.md --hyperframes .
+node <fe>/scripts/transitions.mjs verify --storyboard ./STORYBOARD.md --index ./index.html
+hyperframes lint && hyperframes check
+```
+
+（`<fe>` = 已安裝的 faceless-explainer skill 資料夾。）字幕每次重建後，都要重跑 `patch_captions.py` 再跑 `theme.py`。`theme.json` 的 `accents` 指定每一格裡哪些元素用強調色（block／fill／text）。
+
+## 8. 審查（`review-loop`）
+
+- 先 `hyperframes check`，再用 draft 品質輸出整片，在**每個子句結束前 0.15 秒**截一格（取落定的狀態），用 `review-loop/scripts/sheet.py --video … --at …` 拼成 contact sheet，**每一張都要親眼看**。
+- 對照 `references/lessons.md` 的檢查表逐項看，修完重新輸出、重新看，直到一輪都沒有問題。
+- 看完才輸出最終版：`hyperframes render --skill=faceless-explainer --quality high --output renders/video.mp4`，再量一次響度。
+
+## 9. 交付
+
+交出 MP4 路徑、片長、一張總覽 contact sheet，並列出：用了哪些來源、哪些數字是宣稱、哪些是估算、哪些地方和需求不一樣（例如片長超出）、哪些沒做（例如沒有配樂）。
