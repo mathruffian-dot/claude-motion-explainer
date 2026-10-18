@@ -12,10 +12,12 @@ theme.json (optional keys):
 
 Idempotent — run after any frame is (re)built:  python unify_frames.py --project <dir>
 """
+import sys
 import argparse
 import json
 import re
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 MARK = "/* local Latin faces (unify_frames.py) */"
 WEIGHTS = {"Thin": 100, "ExtraLight": 200, "Light": 300, "Regular": 400, "Italic": 400, "Medium": 500,
@@ -63,7 +65,7 @@ def main():
         if MARK in t:
             t = re.sub(re.escape(MARK) + r"(?:\n\s*@font-face[^\n]*)*\n", block, t)
         else:
-            i = t.index("<style>") + len("<style>")
+            i = re.search(r"<style[^>]*>", t).end()
             t = t[:i] + "\n    " + block + t[i:]
         t = re.sub(r"font-family:\s*([^;{}]*,[^;{}]*);", fix_stack, t)
         if hair:

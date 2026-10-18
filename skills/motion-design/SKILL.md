@@ -9,6 +9,16 @@ HyperFrames 文件教你 API，這份檔案管的是品味。底下的數字來�
 
 > 改編自 whaleyxbt/claude-motion 的 `motion-design` skill（MIT，見同資料夾 `LICENSE`）。原版針對 Remotion；本版改寫成 HyperFrames（HTML + GSAP），並加上繁體中文排版規則。標示「（本版新增）」的段落不是原作內容。
 
+## 在 motion-explainer 系列流程裡使用時（本版新增）
+
+`motion-explainer`（以及 `-images`、`-video`、`soil-motion-deck`）用官方 `faceless-explainer` 的流程，下面三件事以那個流程為準，本檔的寫法不適用：
+
+- **時間**：節拍來自 `STORYBOARD.md` 和 `audio_meta.json`（旁白子句的時間），每一格的 `data-start`／`data-duration` 由 `assemble-index` 寫入。**不要另外建 `timeline.js`／`window.TL`**（第 1 節）。
+- **建專案**：用 `npx hyperframes init`（見 motion-explainer 第 3 節），不是第「流程」節的做法。
+- **字型與顏色**：由專案的 `theme.json` 決定（預設源石黑體粗體、三色主題），`theme.py` 會覆蓋每一格自己寫的字型和色票。第 5、6 節的字族建議只在沒有 `theme.json` 時使用。
+
+其餘的品味規則（緩動、彈性、閱讀停留、構圖、中文排版、強調色只給重點）照常適用。
+
 ## 與官方 HyperFrames skills 的分工（本版新增）
 
 本機也裝了 HeyGen 官方的 HyperFrames skills（`hyperframes`、`hyperframes-core`、`hyperframes-animation` 等）。分工如下：
@@ -108,7 +118,7 @@ CustomEase.create("land",  "0.55,0,0.2,1.12"); // overshoot
 
 ## 6. 配色
 
-- （本版新增）整支片用**三個顏色定調**，像簡報版型一樣由使用者決定：背景色 `bg`、主色 `fg`（文字與線稿）、強調色 `accent`，寫在專案的 `theme.json`，用 `motion-explainer`（或圖片加強版 `motion-explainer-images`）技能的 `theme.py` 套用。強調色只給「答案、結論、關鍵數字、章節卡」。
+- （本版新增）整支片用**三個顏色定調**，像簡報版型一樣由使用者決定：背景色 `bg`、主色 `fg`（文字與線稿）、強調色 `accent`，寫在專案的 `theme.json`，用 `motion-explainer` 系列技能的 `theme.py` 套用。強調色只給「答案、結論、關鍵數字、章節卡」。
 - 色票定義成 `:root` 的 CSS 變數（`--bg`、`--ink`、`--muted`、`--accent`…），場景裡不要再冒出新的色碼。
 - 只有一個強調色，而且它有意義：改變的那個東西、答案、勝出者。如果什麼都是強調色，就等於沒有強調。
 - 光暈由狀態驅動而不是時間（`glow = effort`）：光線要能說明故事。
@@ -140,6 +150,6 @@ CustomEase.create("land",  "0.55,0,0.2,1.12"); // overshoot
 ## 流程
 
 1. 先把節拍寫進 `timeline.js`（用數字寫的分鏡），向使用者確認節奏再動手。
-2. 用 kinocut 的 `hyperframes_init` 建專案；每個場景是 `compositions/` 裡的一個 composition，共用元件和跨場景物件放在 `index.html`。
+2. 用 `npx hyperframes init <專案資料夾>` 建專案；每個場景是 `compositions/` 裡的一個 composition，共用元件和跨場景物件放在 `index.html`。
 3. 每次有意義的修改後，都跑 `review-loop` 技能。
 4. 畫面時間鎖定後再處理聲音：音效和配樂用 `<audio data-start>` 對上 `TL` 的節拍。中文旁白的口音和情緒交給使用者用耳朵判斷，不要拿 ASR 或相似度分數代替（本版新增）。

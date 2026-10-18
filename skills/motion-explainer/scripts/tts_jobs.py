@@ -12,10 +12,12 @@ writes <project>/assets/voice/tts_jobs.json. Run your TTS batch on it so that
 assets/voice/raw/NN.wav exists for every line, then run voice_meta.py.
 Any other TTS engine works too — it only has to produce assets/voice/raw/NN.wav per line.
 """
+import sys
 import argparse
 import json
 import re
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 DEFAULT_REF = "同學們好，今天我們用三個簡單的物理原理，來拆解一個看起來很神奇的現象。"
 

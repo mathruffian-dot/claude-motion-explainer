@@ -6,6 +6,7 @@ see references/hardware.md for the reasoning and the one measured data point.
 
   python hw_check.py [--project <dir>]     # --project: check free disk where the film will live
 """
+import sys
 import argparse
 import ctypes
 import os
@@ -13,6 +14,7 @@ import platform
 import shutil
 import subprocess
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 
 def ram_gb():

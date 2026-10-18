@@ -19,6 +19,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 DEFAULT_REF = "同學們好，今天我們用三個簡單的物理原理，來拆解一個看起來很神奇的現象。"
 

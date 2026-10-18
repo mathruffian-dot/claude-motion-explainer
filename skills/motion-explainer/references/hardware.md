@@ -1,6 +1,6 @@
 # 硬體效能：哪些步驟吃什麼資源（給 agent 的建議）
 
-動工前先跑 `python scripts/hw_check.py --project <專案>`，它會偵測 CPU、記憶體、NVIDIA GPU 和硬碟空間，印出建議設定。**那些建議都是依經驗法則推估的，不是跑分結果**；下面說明推估的依據。
+動工前先跑 `python <me>/scripts/hw_check.py --project <專案>`，它會偵測 CPU、記憶體、NVIDIA GPU 和硬碟空間，印出建議設定。**那些建議都是依經驗法則推估的，不是跑分結果**；下面說明推估的依據。
 
 唯一的實測資料：Intel Ultra 7 270K（24 核心）、95 GB RAM、RTX 5090，105 秒的片，draft 輸出約 75–80 秒，high 輸出約 85–90 秒，`auto` 選了 3 個 render worker。效能普通的電腦會照比例變慢，但我們沒有測過。
 
@@ -34,7 +34,7 @@
 ## 不吃本機硬體，但有其他成本
 
 - **平行派出的 frame sub-agent**：在雲端跑，不耗本機效能，但很耗 token，每格約 14–22 萬（9 格的片實測）。有些 worker 會在本機開瀏覽器預覽自己做的那一格，所以 9 個同時跑的時候記憶體會有一陣高峰。記憶體不到 16 GB 的電腦，改成每批 3 個分批派出。
-- **需要網路的部分**：edge-tts 合成、各格從 CDN 載入 GSAP、`fetch_fonts.sh` 從 npm 下載字型。
+- **需要網路的部分**：edge-tts 合成、各格從 CDN 載入 GSAP、`fetch_fonts.sh` 下載字型（源石黑體從 GitHub release、Latin 字型從 npm、系統沒有 Noto TC 時從 google/fonts）。
 
 ## 技能沒用到的 HyperFrames 選配
 

@@ -19,6 +19,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 HEAD_KEEP, TAIL_KEEP = 0.08, 0.15
 NOISE, MIN_GAP = "-38dB", 0.10

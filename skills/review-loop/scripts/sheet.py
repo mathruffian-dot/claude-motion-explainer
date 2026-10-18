@@ -1,7 +1,7 @@
 """Contact sheets for motion review: one labelled tile per moment, 4x2 per sheet.
 
 Frames come from a rendered video (via ffmpeg) or from existing images
-(e.g. hyperframes_snapshot output). Tiles default to 360 px wide, the
+(e.g. hyperframes snapshot output). Tiles default to 360 px wide, the
 phone-feed width, so a readable tile means a readable phone.
 
   python sheet.py --video out/draft.mp4 --timeline timeline.js
@@ -18,6 +18,7 @@ import tempfile
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 COLS, ROWS = 4, 2
 GAP = 8

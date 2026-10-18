@@ -16,9 +16,11 @@ to a system font. Re-run after any text change (it always subsets from the full 
   python subset_fonts.py --project <dir> --restore     # point url()s back at the full fonts
 Requires: pip install fonttools  (optional: pip install brotli for woff2)
 """
+import sys
 import argparse
 import re
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 EXTRA = "".join(chr(c) for c in range(0x20, 0x7F)) + "，。、？！：；「」『』（）《》〈〉—…·・～％＋－×÷＝≈≠→←↑↓①②③④⑤⑥⑦⑧⑨⑩²³°μ"
 

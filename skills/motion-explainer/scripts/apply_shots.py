@@ -16,10 +16,12 @@ shots.json:
 }
   python apply_shots.py --project <dir>
 """
+import sys
 import argparse
 import json
 import re
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 
 def main():

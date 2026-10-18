@@ -45,6 +45,10 @@ cp -r claude-motion-explainer/skills/* ~/.claude/skills/        # Claude Code
 # Codex / 其他 agent：複製到 ~/.agents/skills/
 ```
 
+**給其他 agent（Codex、Gemini CLI 等）**：這些 skill 只用到終端機指令和一般的讀寫檔案，沒有 Claude 專屬的工具。兩個要注意的地方，`SKILL.md` 開頭都有寫：
+- 工具和 HyperFrames 官方 skill 的位置用代號 `<me>`、`<fe>` 表示，開工前先用一行指令找出實際路徑。
+- 「每格派一個 sub-agent 平行做」在沒有 sub-agent 的 agent 上改成一格一格依序做，結果一樣，只是比較慢。
+
 字型（開源 OFL）不放在 repo 裡，每個專案要用時，跑一次 `bash skills/motion-explainer/scripts/fetch_fonts.sh <專案資料夾>` 就會放好。預設全片使用 **[源石黑體](https://github.com/ButTaiwan/genseki-font) 粗體**（GenSeki Gothic Bold），中文、英文、數字、字幕都是它。影片做完、正式輸出前，`subset_fonts.py` 會把字型瘦身成只含片中用到的字（源石黑體從 15 MB 降到約 140 KB）。
 
 ## 怎麼用
@@ -66,7 +70,7 @@ Agent 會先問你播放平台、長度、旁白聲音和**三個顏色**（背�
   "font": { "family": "GenSekiGothic", "file": "GenSekiGothic2TW-B.otf", "weight": 700 } }
 ```
 
-強調色只給「答案、結論、關鍵數字、章節卡」。想換顏色或字型，改 `theme.json` 再跑 `python scripts/theme.py --project <專案>`，然後重新輸出就好，不用重做動畫。
+強調色只給「答案、結論、關鍵數字、章節卡」。想換顏色或字型，改 `theme.json` 再跑 `python skills/motion-explainer/scripts/theme.py --project <專案>`，然後重新輸出就好，不用重做動畫。
 
 ## 延伸：動畫教學簡報
 

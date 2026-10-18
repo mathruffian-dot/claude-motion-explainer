@@ -6,6 +6,8 @@ other TTS route produces, so voice_meta.py and the rest of the pipeline do not c
   pip install edge-tts            # needs an internet connection while generating
   python edge_tts_voice.py --project <dir> [--voice zh-TW-HsiaoChenNeural] [--rate +0%] [--pitch +0Hz]
   python edge_tts_voice.py --list zh-TW       # show voices for a locale
+  python edge_tts_voice.py --project <dir> --line 5 --text "Road-ster 的…" --out assets/voice/fix/cand/05_B.wav
+                                              # one retake candidate for fix_voice.py
 
 Taiwanese Mandarin voices: zh-TW-HsiaoChenNeural (female, default), zh-TW-HsiaoYuNeural (female),
 zh-TW-YunJheNeural (male). Every line uses the same voice, so the narrator stays consistent.
@@ -17,6 +19,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 
 async def list_voices(locale):
@@ -38,6 +41,9 @@ def main():
     ap.add_argument("--rate", default="+0%", help='speaking rate, e.g. "-5%%" or "+10%%"')
     ap.add_argument("--pitch", default="+0Hz", help='pitch shift, e.g. "-2Hz"')
     ap.add_argument("--list", metavar="LOCALE", help="list voices for a locale (e.g. zh-TW) and exit")
+    ap.add_argument("--line", type=int, help="one candidate for fix_voice.py: only this SCRIPT.md line ...")
+    ap.add_argument("--text", help="... spoken as this text instead (alternate spelling; captions keep the script)")
+    ap.add_argument("--out", help="... written to this WAV, e.g. assets/voice/fix/cand/05_B.wav (overwrites)")
     a = ap.parse_args()
     try:
         import edge_tts  # noqa: F401
@@ -49,6 +55,20 @@ def main():
     project = Path(a.project).resolve()
     script = (project / "SCRIPT.md").read_text(encoding="utf-8")
     lines = re.findall(r"^## Line (\d+).*?\n(?:.*?\n)*?    (\S.*)$", script, re.M)
+    if a.line is not None:
+        # edge-tts has no seed: vary candidates by spelling (--text), --rate or --pitch instead.
+        found = {int(n): text for n, text in lines}
+        if a.line not in found or not a.out:
+            sys.exit("--line needs an existing '## Line N' in SCRIPT.md and --out <file.wav>")
+        wav = Path(a.out).resolve()
+        wav.parent.mkdir(parents=True, exist_ok=True)
+        mp3 = wav.with_suffix(".mp3")
+        asyncio.run(synth((a.text or found[a.line]).strip(), a.voice, a.rate, a.pitch, mp3))
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(mp3), "-ar", "24000", "-ac", "1",
+                        "-c:a", "pcm_s16le", str(wav)], check=True)
+        mp3.unlink()
+        print("[ok]", wav)
+        return
     raw = project / "assets" / "voice" / "raw"
     raw.mkdir(parents=True, exist_ok=True)
     for n, text in lines:

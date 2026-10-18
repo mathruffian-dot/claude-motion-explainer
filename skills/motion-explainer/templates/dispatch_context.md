@@ -33,5 +33,5 @@
 - Exits ≈ half the entrance. Reading holds: a short phrase holds ≥ 1 s after it settles.
 - Deterministic only: no `Math.random()` (seeded function instead), no `Date`, no timers, no CSS transitions/keyframes. Continuous motion = a linear tween across the frame on the same timeline.
 - Fonts: only files in `assets/fonts/` (`@font-face` for each family you name; no Google Fonts `@import`). Latin face first, CJK face second in every stack.
-- Colors: author in the `frame.md` palette; the orchestrator re-colors to the user's three-color theme afterwards. Mark the elements that carry the answer / key number / chapter card with a stable id so they can take the accent.
-- Bottom hairline at **y = <880> px**, top at **<3cqw>** — same in every frame.
+- Colors: author in the `frame.md` palette; the orchestrator re-colors to the user's three-color theme afterwards. Give the elements that carry the answer / key number / chapter card one of the classes `accent-block` (accent background + bg text), `accent-fill` (accent background), `accent-text` (accent text) or `accent-stroke` (accent SVG line) — still drawn in the source palette; `theme.py` turns them into the accent.
+- Bottom hairline at **y = <880> px**, top at **<3cqw>** — same in every frame. Name them `<frame-id>-hair-top` / `<frame-id>-hair-bottom` (id or class) and position them with `top:` in a rule selected by that name, so `unify_frames.py` can align them.

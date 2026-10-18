@@ -7,8 +7,8 @@
             loudness; re-time that line's clauses in audio_meta.json for the captions. (Never cut a
             re-take into clauses by its pauses — it pauses in different places, and the cuts land
             mid-word, duplicating or dropping words.)
-            Afterwards: rebuild captions, patch_captions.py, delete the pre-theme captions copy,
-            theme.py, render.
+            Afterwards: rebuild captions, patch_captions.py, theme.py (it picks up the rebuilt
+            captions by itself), transitions inject, render.
 
   python fix_voice.py --project <dir> audition --line 3 --clauses 0 1
   python fix_voice.py --project <dir> apply --line 3 --take 03_C
@@ -27,6 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import voice_meta as vm  # noqa: E402  (trim, speech_spans, clauses, time_clauses, script_lines)
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 ROOT = Path(".").resolve()   # set from --project in main()
 FIX = ROOT / "assets" / "voice" / "fix"

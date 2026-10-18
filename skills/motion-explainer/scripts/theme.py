@@ -25,11 +25,13 @@ Hand edits to an already-themed file must also go into its .hyperframes/pre-them
   python theme.py --project <dir>            # apply theme.json
   python theme.py --project <dir> --restore  # back to the source palette
 """
+import sys
 import argparse
 import json
 import re
 import shutil
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 MARK = "/* theme accents (theme.py) */"
 THEMED = "(theme.py)"  # every themed file carries this; its absence marks a freshly generated source

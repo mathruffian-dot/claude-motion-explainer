@@ -18,8 +18,8 @@
 
 ```bash
 pip install edge-tts
-python scripts/edge_tts_voice.py --list zh-TW          # 列出可用的台灣聲音
-python scripts/edge_tts_voice.py --project <專案> --voice zh-TW-HsiaoChenNeural
+python <me>/scripts/edge_tts_voice.py --list zh-TW          # 列出可用的台灣聲音
+python <me>/scripts/edge_tts_voice.py --project <專案> --voice zh-TW-HsiaoChenNeural
 ```
 
 需要時用 `--rate -5%` 放慢一點，國中生比較跟得上；也可以用 `--pitch -2Hz` 微調音高。
@@ -42,7 +42,7 @@ python scripts/edge_tts_voice.py --project <專案> --voice zh-TW-HsiaoChenNeura
    ```
 6. 接上本技能：
    ```bash
-   python scripts/breeze_voice.py --project <專案> --breeze-repo <breeze-tts 路徑> --model <Breeze-TTS-2 路徑> \
+   python <me>/scripts/breeze_voice.py --project <專案> --breeze-repo <breeze-tts 路徑> --model <Breeze-TTS-2 路徑> \
        --python <breeze-tts/venv 的 python> --voice "<聲音描述>" --only-ref
    ```
    先讓使用者聽 `assets/voice/raw/ref_narrator.wav`，滿意了再拿掉 `--only-ref`，產生全部句子。

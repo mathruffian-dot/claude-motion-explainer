@@ -10,10 +10,12 @@ faces it names have no @font-face (a lint error). Run after every `captions.mjs 
 theme.json (optional): "caption": {"cjk": "NotoSansTC", "cjk_file": "NotoSansTC-VF.ttf",
                                    "latin": "Hanken Grotesk", "weight": 700}
 """
+import sys
 import argparse
 import json
 import re
 from pathlib import Path
+sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 MARK = "/* caption face (patch_captions.py) */"
 
