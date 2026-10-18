@@ -59,7 +59,7 @@ description: 用自然語言做「原理解說動畫影片」的端到端流程�
    - **Breeze TTS 2**：`python scripts/breeze_voice.py --project <p> --breeze-repo … --model … --voice "<聲音描述>" --only-ref`，先設計**一個**參考聲音讓使用者聽，確認後再拿掉 `--only-ref` 產生全部句子（每一句都複製這個參考聲音）。如果有批次 runner，改用 `scripts/tts_jobs.py` 產生工作清單。
    - 使用者還沒裝、或不確定要選哪一個：照 `references/tts-setup.md` 給建議，一步一步確認，不要擅自安裝。
 2. **先讓使用者試聽前一兩句**，口音與情緒由使用者用耳朵決定，不拿分數代替。不滿意就換一個 voice 或改語速，刪掉舊的 WAV 再重新產生。
-   - **整支片做完才發現某個字唸錯**（例如英文品牌名、破音字）：不要整句重錄，不然那一格的動畫時間會全部跑掉。改成：同一個聲音、同一句話產生 4–6 個候選，可以換 seed，也可以換拼法，例如 `Road-ster` 或同音同調的字，字幕仍然用原文；放到 `assets/voice/fix/cand/NN_X.wav`。然後跑 `python scripts/fix_voice.py --project . audition --line N --clauses <那個詞所在的子句>`，把關鍵片段串成一個試聽檔給使用者用耳朵選。選好之後跑 `apply --line N --take NN_X`，它會把新句子**整句等比伸縮回原本的長度**，音量對齊原本那一句，再重算那一句的字幕時間，每一格的長度不變。接著重建字幕 → `patch_captions.py` → 刪掉 `.hyperframes/pre-theme/compositions/captions.html`（不然 `theme.py` 會換回舊字幕）→ `theme.py` → 重新輸出。**不要把重錄的句子照停頓切成子句再對時間**：重錄的停頓位置不一樣，切點會落在字中間，結果漏字或重複（實測發生過）。ASR 只能用來篩掉明顯錯的；聲調對不對，ASR 聽不出來（實例：「輪胎」ASR 判對，使用者聽起來是錯的）。
+   - **整支片做完才發現某個字唸錯**（例如英文品牌名、破音字）：不要整句重錄，不然那一格的動畫時間會全部跑掉。改成：同一個聲音、同一句話產生 4–6 個候選，可以換 seed，也可以換拼法，例如 `Road-ster` 或同音同調的字，字幕仍然用原文；放到 `assets/voice/fix/cand/NN_X.wav`。然後跑 `python scripts/fix_voice.py --project . audition --line N --clauses <那個詞所在的子句>`，把關鍵片段串成一個試聽檔給使用者用耳朵選。選好之後跑 `apply --line N --take NN_X`，它會把新句子**整句等比伸縮回原本的長度**，音量對齊原本那一句，再重算那一句的字幕時間，每一格的長度不變。接著重建字幕 → `patch_captions.py` → `theme.py`（它會自動認出新字幕）→ 重新輸出。**不要把重錄的句子照停頓切成子句再對時間**：重錄的停頓位置不一樣，切點會落在字中間，結果漏字或重複（實測發生過）。ASR 只能用來篩掉明顯錯的；聲調對不對，ASR 聽不出來（實例：「輪胎」ASR 判對，使用者聽起來是錯的）。
 3. `python scripts/voice_meta.py --project <p>`：去頭尾靜音、量出每個子句的時間、寫 `audio_meta.json`。
 4. `node <faceless-explainer>/scripts/audio.mjs sync-durations --audio-meta ./audio_meta.json --storyboard ./STORYBOARD.md`
 5. 響度：最後成片要約 −14 LUFS、true peak ≤ −1 dBFS。旁白太小聲就統一加同樣的增益加 limiter，保留各句之間的相對音量。
@@ -82,8 +82,8 @@ description: 用自然語言做「原理解說動畫影片」的端到端流程�
 ## 7. 組裝、字幕、配色
 
 ```bash
-node <fe>/scripts/assemble-index.mjs --storyboard ./STORYBOARD.md --hyperframes .
 node <fe>/scripts/captions.mjs build --storyboard ./STORYBOARD.md --audio-meta ./audio_meta.json --hyperframes . --out ./caption_groups.json
+node <fe>/scripts/assemble-index.mjs --storyboard ./STORYBOARD.md --hyperframes .   # 要在字幕之後：輸出要看到 captions (track 2): yes
 python scripts/patch_captions.py --project .     # 中文字幕字型與粗細（預設粗體 700）
 python scripts/theme.py --project .              # 套用 theme.json 的三色與字型（index、每一格、字幕）
 node <fe>/scripts/transitions.mjs inject --storyboard ./STORYBOARD.md --hyperframes .
@@ -91,7 +91,7 @@ node <fe>/scripts/transitions.mjs verify --storyboard ./STORYBOARD.md --index ./
 hyperframes lint && hyperframes check
 ```
 
-（`<fe>` = 已安裝的 faceless-explainer skill 資料夾。）字幕每次重建後，都要重跑 `patch_captions.py` 再跑 `theme.py`。`theme.json` 的 `accents` 指定每一格裡哪些元素用強調色（block／fill／text）；`font` 會把每一格和字幕的所有文字都換成同一個字型和字重，覆蓋 worker 原本寫的字型設定。換字型後字變寬了，要重跑 `hyperframes check` 看有沒有溢出或重疊。
+（`<fe>` = 已安裝的 faceless-explainer skill 資料夾。）字幕每次重建後，都要重跑 `patch_captions.py` 再跑 `theme.py`。`theme.json` 的 `accents` 指定每一格裡哪些元素用強調色（block／fill／text／stroke）。`theme.py` 會自動認出重新產生過的檔案（沒有 `(theme.py)` 標記的），拿它當新的原始檔；但手動改已套色的檔案時，`.hyperframes/pre-theme/` 裡那一份也要一起改。`transitions.mjs inject` 會延長每一格的長度，所以每次跑完 `theme.py` 都要再 inject 一次；`font` 會把每一格和字幕的所有文字都換成同一個字型和字重，覆蓋 worker 原本寫的字型設定。換字型後字變寬了，要重跑 `hyperframes check` 看有沒有溢出或重疊。
 
 **最後一步才瘦身字型**：`python scripts/subset_fonts.py --project .`。它會只留下片中用到的中文字（CJK 字型從 12–17 MB 降到幾百 KB），並把每一格的 `@font-face` 改指向瘦身後的檔案。任何改動文字、字幕或配色的動作之後都要重跑：`theme.py` 每次都從配色前的原始檔重新套色，原始檔指向的是完整字型，新加的字如果不在瘦身檔裡，就會退回系統字型。
 

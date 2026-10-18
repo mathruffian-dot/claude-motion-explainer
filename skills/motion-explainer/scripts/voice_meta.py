@@ -22,7 +22,7 @@ from pathlib import Path
 
 HEAD_KEEP, TAIL_KEEP = 0.08, 0.15
 NOISE, MIN_GAP = "-38dB", 0.10
-SPLIT = r"[，。？！；、,.?!;]"
+SPLIT = r"[，。？！；、：,.?!;:]"
 
 
 def run(args):

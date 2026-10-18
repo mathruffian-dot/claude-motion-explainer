@@ -68,6 +68,10 @@ Agent 會先問你播放平台、長度、旁白聲音和**三個顏色**（背�
 
 強調色只給「答案、結論、關鍵數字、章節卡」。想換顏色或字型，改 `theme.json` 再跑 `python scripts/theme.py --project <專案>`，然後重新輸出就好，不用重做動畫。
 
+## 延伸：動畫教學簡報
+
+[soil-motion-deck](https://github.com/mathruffian-dot/soil-motion-deck) 把這套技能和 [SOIL Teaching Deck](https://github.com/mathruffian-dot/soil-teaching-deck) 接在一起，一次做出兩樣東西：一份 .pptx 教學簡報，關鍵頁嵌入動畫片段；以及同一份內容的配音字幕解說影片。
+
 ## English
 
 A set of agent skills that turn one sentence into a narrated, captioned explainer animation (MP4) on top of [HyperFrames](https://github.com/heygen-com/hyperframes): web research → brief (incl. a three-color theme) → clause-cued storyboard → TTS (edge-tts by default, Breeze TTS 2 optional) → parallel per-frame sub-agents → captions → theming → contact-sheet self-review → render. Written in Traditional Chinese; the workflow itself is language-agnostic. See `skills/motion-explainer/SKILL.md`.
