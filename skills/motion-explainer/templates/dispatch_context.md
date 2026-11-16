@@ -35,3 +35,13 @@
 - Fonts: only files in `assets/fonts/` (`@font-face` for each family you name; no Google Fonts `@import`). Latin face first, CJK face second in every stack.
 - Colors: author in the `frame.md` palette; the orchestrator re-colors to the user's three-color theme afterwards. Give the elements that carry the answer / key number / chapter card one of the classes `accent-block` (accent background + bg text), `accent-fill` (accent background), `accent-text` (accent text) or `accent-stroke` (accent SVG line) — still drawn in the source palette; `theme.py` turns them into the accent.
 - Bottom hairline at **y = <880> px**, top at **<3cqw>** — same in every frame. Name them `<frame-id>-hair-top` / `<frame-id>-hair-bottom` (id or class) and position them with `top:` in a rule selected by that name, so `unify_frames.py` can align them.
+
+## 3D frames (three.js) — only if your packet says `3D`
+
+Read `references/threejs.md` and start from `templates/three_scene.example.html` (replace every `FRAME_ID` with your composition id).
+- `<script src="assets/lib/three.min.js">` goes **inside your own `<template>`** (in `index.html` lint fails with `missing_three_script`).
+- **`hf-seek` gives ROOT time.** Subtract your frame's start: read `data-start` from `[data-composition-id="<id>"][data-start]` (the host div in index.html). Without this your animation starts mid-way.
+- Every visible state is a pure function of frame time inside `renderAt(t)`; no `requestAnimationFrame`, no clock, seeded randomness only. `preserveDrawingBuffer: true`, transparent clear color.
+- Colors as `"#rrggbb"` strings from the `frame.md` palette (`theme.py` can't recolor `0x…` numbers).
+- Thick lines = thin cylinders (`InstancedMesh` for many segments); labels = HTML positioned by projecting 3D points every frame, sized in px (≥ 32 px), hidden when behind the camera, kept out of the caption area.
+- Register `window.__hf.buildReady["<id>"]` and a GSAP timeline as long as your frame.

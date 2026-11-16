@@ -1,0 +1,89 @@
+<!--
+  three.js 3D 格範本（motion-explainer，2026-11-16）。複製成 compositions/frames/NN-名稱.html，把 FRAME_ID 全部換成這一格的
+  composition id（index.html 裡宿主 div 的 data-composition-id），再改「場景」與「時間表」兩段。說明見 references/threejs.md。
+  範例內容：一顆行星＋傾斜的地軸（粗線）＋標籤，鏡頭從遠處慢慢推近（dive），3 個時間點。
+  必守：① three.min.js 寫在這個 <template> 裡；② 畫面只由「這一格的時間」決定（hf-seek 給的是全片時間，要減掉這格的開始時間）；
+  ③ 顏色寫成 "#rrggbb" 字串（theme.py 才換得到），不要寫 0x 數字；④ preserveDrawingBuffer: true。
+-->
+<template>
+<style>
+#root{position:absolute;inset:0;overflow:hidden}
+#FRAME_ID-canvas{position:absolute;left:0;top:0;width:100%;height:100%}
+.FRAME_ID-lab{position:absolute;opacity:0;transform:translate(-50%,-50%);white-space:nowrap;
+  font-size:42px;line-height:1.25;padding:6px 20px;border-radius:14px;background:#F2F0EA;color:#121212}
+/* 標籤用 px：cqw 要有 container-type 的祖先才準，沒有時字會被算得很小 */
+</style>
+<div id="root" data-composition-id="FRAME_ID" data-width="1920" data-height="1080">
+  <canvas id="FRAME_ID-canvas" width="1920" height="1080"></canvas>
+  <!-- 3D 物件上的標籤：HTML，每格把 3D 座標投影到螢幕再擺上去。class 用 accent-* 讓 theme.py 套強調色 -->
+  <div id="FRAME_ID-lab-axis" class="FRAME_ID-lab accent-block">地軸傾斜 23.5°</div>
+</div>
+<script src="assets/lib/three.min.js"></script>
+<script>
+(function () {
+  const ID = "FRAME_ID", W = 1920, H = 1080;
+  // ── 這一格的開始時間：hf-seek 給全片時間 → 讀 index.html 宿主 div 的 data-start 減掉（實測 0.8.168：snapshot 與 render 都對）
+  const host = document.querySelector('[data-composition-id="' + ID + '"][data-start]');
+  const T0 = host ? parseFloat(host.getAttribute("data-start")) || 0 : 0;
+  const DUR = host ? parseFloat(host.getAttribute("data-duration")) || 6 : 6;
+
+  // ── 小工具（全部是 t 的純函數）
+  const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+  const ease = (u) => u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;          // move：慢—快—慢
+  const win = (t, a, b) => ease(clamp((t - a) / (b - a), 0, 1));                           // a→b 之間 0→1
+  const fade = (t, a, b, d) => { d = d || 0.35; return Math.min(clamp((t - a) / d, 0, 1), clamp((b - t) / d, 0, 1)); };
+  const C = (hex) => new THREE.Color(hex);                                                   // 顏色一律走字串
+
+  // ── 時間表（這一格的秒數；從 shots / 旁白子句換算來，不要寫死全片秒數）
+  const K = { dive: [0.0, 3.0], axis: 1.2, label: 2.0 };
+
+  // ── three.js 基本盤
+  const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById(ID + "-canvas"), antialias: true, alpha: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(1); renderer.setSize(W, H, false); renderer.setClearColor(0x000000, 0);   // 透明背景，底色交給頁面
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(32, W / H, 0.1, 200);
+  scene.add(new THREE.HemisphereLight(C("#FFF4E0"), C("#3A3530"), 0.8));                   // 暖色主光＋偏暗地面光
+  const key = new THREE.DirectionalLight(C("#FFE6C8"), 0.9); key.position.set(-5, 6, 4); scene.add(key);
+  const rim = new THREE.DirectionalLight(C("#9CC8FF"), 0.5); rim.position.set(5, 2, -6); scene.add(rim);  // 冷色輪廓光
+
+  // ── 場景：行星＋地軸
+  const tilt = new THREE.Group(); tilt.rotation.z = -23.5 * Math.PI / 180; scene.add(tilt);
+  const planet = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 48), new THREE.MeshLambertMaterial({ color: C("#3E7CC9") }));
+  tilt.add(planet);
+  // 粗線：WebGL 線寬固定 1 px → 用細圓柱。很多段（等高線、軌跡）時改用 InstancedMesh，每段一根
+  const axisMat = new THREE.MeshBasicMaterial({ color: C("#FF7A1A"), transparent: true });
+  const axis = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 3, 12), axisMat); tilt.add(axis);
+
+  // ── 3D 座標 → 螢幕座標，擺 HTML 標籤
+  const PV = new THREE.Vector3();
+  function anchor(id, v3, op, dx, dy) {
+    const el = document.getElementById(id); PV.copy(v3).project(cam);
+    el.style.left = ((PV.x + 1) / 2 * W + (dx || 0)) + "px"; el.style.top = ((1 - PV.y) / 2 * H + (dy || 0)) + "px";
+    el.style.opacity = PV.z < 1 ? op.toFixed(3) : 0;                                       // 跑到鏡頭後面就藏起來
+  }
+  const TIP = new THREE.Vector3();
+
+  function renderAt(gt) {
+    const t = gt - T0;                                                                       // 這一格的時間
+    // 鏡頭：從遠處推近（dive），角度與距離都是 t 的函數
+    const u = win(t, K.dive[0], K.dive[1]);
+    const d = 11 - 5 * u, pitch = (18 - 8 * u) * Math.PI / 180, yaw = (-35 + 20 * u) * Math.PI / 180;
+    cam.position.set(d * Math.cos(pitch) * Math.sin(yaw), d * Math.sin(pitch), d * Math.cos(pitch) * Math.cos(yaw));
+    cam.lookAt(0, 0, 0); cam.updateMatrixWorld();
+    planet.rotation.y = t * 0.6;                                                              // 自轉：線性，直接用 t
+    const ax = win(t, K.axis, K.axis + 0.8); axis.scale.set(1, Math.max(ax, 0.001), 1); axisMat.opacity = ax;
+    tilt.updateMatrixWorld(); TIP.set(0, 1.5, 0); tilt.localToWorld(TIP);
+    anchor(ID + "-lab-axis", TIP, fade(t, K.label, DUR + 9), 0, -50);
+    renderer.render(scene, cam);
+  }
+
+  // ── 註冊：GSAP 時間軸（長度＝這一格）、hf-seek、載入完成
+  const tl = gsap.timeline({ paused: true }); tl.set({}, {}, DUR);
+  window.__timelines = window.__timelines || {}; window.__timelines[ID] = tl;
+  window.addEventListener("hf-seek", (e) => renderAt(e.detail.time));
+  window.__hf = window.__hf || {}; window.__hf.buildReady = window.__hf.buildReady || {};
+  window.__hf.buildReady[ID] = (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => renderAt(T0));
+  renderAt(T0);
+})();
+</script>
+</template>

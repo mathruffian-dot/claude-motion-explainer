@@ -27,6 +27,8 @@
 
 唸錯字也有工具：整支片做完才發現某個字唸錯（例如英文品牌名、破音字），用 `fix_voice.py` 產生試聽檔，讓你用耳朵從幾個候選裡挑一個，再把那一句**整句等比伸縮回原本的長度**換進去。每一格的長度都不變，動畫不用重做。
 
+**需要 3D 的內容會自動用 three.js**（2026-11-16 起）：立體地形與等高線、分子、天體運行、立體圖形的展開與截面，做成嵌在 HyperFrames 裡的 three.js 格，一樣一格一格精準輸出、跟旁白對齊。照 [`references/threejs.md`](skills/motion-explainer/references/threejs.md)，從範本 [`templates/three_scene.example.html`](skills/motion-explainer/templates/three_scene.example.html) 改起。沒有獨立顯示卡也輸得出來：瀏覽器會改用軟體算 3D；一支 55 秒的 3D 片，桌機實測 2 分 43 秒，用 GPU 是 2 分 25 秒。
+
 ## 需要的環境
 
 先跑 `python skills/motion-explainer/scripts/hw_check.py`：它會檢查你的 CPU、記憶體、GPU 和硬碟，建議要用哪個旁白引擎、輸出時同時開幾個 worker。各步驟吃多少資源，見 [`hardware.md`](skills/motion-explainer/references/hardware.md)。
@@ -78,7 +80,7 @@ Agent 會先問你播放平台、長度、旁白聲音和**三個顏色**（背�
 
 ## English
 
-A set of agent skills that turn one sentence into a narrated, captioned explainer animation (MP4) on top of [HyperFrames](https://github.com/heygen-com/hyperframes): web research → brief (incl. a three-color theme) → clause-cued storyboard → TTS (edge-tts by default, Breeze TTS 2 optional) → parallel per-frame sub-agents → captions → theming → contact-sheet self-review → render. Written in Traditional Chinese; the workflow itself is language-agnostic. See `skills/motion-explainer/SKILL.md`.
+A set of agent skills that turn one sentence into a narrated, captioned explainer animation (MP4) on top of [HyperFrames](https://github.com/heygen-com/hyperframes): web research → brief (incl. a three-color theme) → clause-cued storyboard → TTS (edge-tts by default, Breeze TTS 2 optional) → parallel per-frame sub-agents → captions → theming → contact-sheet self-review → render. Content that needs 3D (terrain and contour lines, molecules, orbits, solids) is built automatically as seek-driven three.js frames inside HyperFrames (`skills/motion-explainer/references/threejs.md`). Written in Traditional Chinese; the workflow itself is language-agnostic. See `skills/motion-explainer/SKILL.md`.
 
 ## 授權
 

@@ -39,3 +39,14 @@
 ## 技能沒用到的 HyperFrames 選配
 
 `hyperframes doctor` 會列出 Whisper（語音轉文字）、Kokoro（本機英文語音）、MusicGen（本機生成配樂），其中 MusicGen 很吃 GPU。這個技能刻意都沒用到：字幕時間用「腳本原文加停頓偵測」取代 Whisper，旁白用 edge-tts 或 Breeze。
+
+## 3D 格（three.js）
+
+- 3D 在瀏覽器裡用 WebGL 畫。有 GPU 就用 GPU；沒有 GPU 時，Chrome 改用軟體（SwiftShader），也畫得出來。
+- 實測（55 秒、整支都是 3D 的等高線片，1920×1080、30 fps，high 品質）：
+  - 本機 GPU（RTX 5090），auto 只開了 1 個 worker：**2 分 25 秒**；
+  - `--no-browser-gpu --workers 2`：**2 分 43 秒**；
+  - 兩版畫面 SSIM 0.998。
+- 這是在 24 核桌機 CPU 上量的；**筆電沒實測**。軟體 3D 吃 CPU，筆電可能慢好幾倍。
+- 對照 2D：105 秒的 2D 片約 85–90 秒，所以 3D 每秒片長的輸出時間約是 2D 的 2.5 倍。
+- 想先知道自己的電腦要多久：只輸出最重的那一段（`--quality draft`），量完再乘回去。

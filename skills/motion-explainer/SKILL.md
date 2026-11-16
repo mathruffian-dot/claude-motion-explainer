@@ -95,6 +95,7 @@ Get-ChildItem "$HOME\.claude\skills","$HOME\.agents\skills" -Directory -ErrorAct
 - `blueprint` 欄位只能是 `<id> (Adapt)`、`<id> (Reproduce)` 或 `compose`，說明另外放在 `note`。
 - 先用 `hyperframes catalog --query` 找現成元件，找不到再自己畫。
 - **會在多格重複出現的主角（車、人、儀器）先畫成一個共用 SVG**，固定各部件的座標，所有 worker 都必須照抄。不這樣做，每格的主角都會長得不一樣。
+- **內容需要 3D 就自動用 three.js，不用先問**（使用者 2026-11-16）：立體地形、分子、天體、立體圖形、物理模擬這類 2D 講不清楚的畫面，直接排成 three.js 格（`shots.json` 的 `note` 寫 `3D`，worker 才知道要讀 3D 規則）。**動手前讀 `references/threejs.md`**，從 `templates/three_scene.example.html` 改起，`three.min.js`（three@0.149.0）放 `assets/lib/`。最常踩的兩個坑：`hf-seek` 給的是全片時間，要減掉這一格的開始時間；顏色要寫成 `"#rrggbb"` 字串，`theme.py` 才換得到。
 
 ## 6. 平行做每一格
 
