@@ -20,6 +20,12 @@ from pathlib import Path
 sys.stdout.reconfigure(errors="replace")  # never crash printing Chinese or accented names on a non-UTF-8 console
 
 MARK = "/* local Latin faces (unify_frames.py) */"
+END = "/* end local Latin faces */"
+# One line exactly as faces() writes it. Used only for files written before END existed, so a
+# re-run replaces our own lines and never a worker's @font-face (a multi-line rule after a blank
+# line used to lose its first line, which broke the frame's CSS).
+GEN_LINE = (r'[ \t]*@font-face \{ font-family: "[^"\n]+"; src: url\("assets/fonts/[^"\n]+\.woff2"\) '
+            r'format\("woff2"\); font-weight: \d+; font-style: (?:normal|italic); \}[ \t]*')
 WEIGHTS = {"Thin": 100, "ExtraLight": 200, "Light": 300, "Regular": 400, "Italic": 400, "Medium": 500,
            "SemiBold": 600, "Bold": 700, "ExtraBold": 800, "Black": 900}
 FAMILY_NAMES = {"HankenGrotesk": "Hanken Grotesk", "DMMono": "DM Mono", "JetBrainsMono": "JetBrains Mono",
@@ -47,7 +53,7 @@ def main():
     cfg = json.loads(cfg_path.read_text(encoding="utf-8")) if cfg_path.exists() else {}
     stacks = cfg.get("font_stacks", {"NotoSerifTC": "Newsreader", "NotoSansTC": "Hanken Grotesk"})
     hair = cfg.get("hairlines")
-    block = MARK + "".join("\n    " + x for x in faces(project / "assets" / "fonts")) + "\n"
+    block = MARK + "".join("\n    " + x for x in faces(project / "assets" / "fonts")) + "\n    " + END + "\n"
     latin = "|".join(re.escape(v) for v in stacks.values())
 
     def fix_stack(m):
@@ -62,8 +68,10 @@ def main():
     for f in sorted((project / "compositions" / "frames").glob("*.html")):
         t0 = f.read_text(encoding="utf-8")
         t = re.sub(r"[ \t]*@import url\(\"https://fonts\.googleapis\.com[^\n]*\n", "", t0)
-        if MARK in t:
-            t = re.sub(re.escape(MARK) + r"(?:\n\s*@font-face[^\n]*)*\n", block, t)
+        if MARK in t and END in t:
+            t = re.sub(re.escape(MARK) + r".*?" + re.escape(END) + r"[ \t]*\n", lambda m: block, t, count=1, flags=re.S)
+        elif MARK in t:
+            t = re.sub(re.escape(MARK) + r"(?:\n" + GEN_LINE + r")*\n", lambda m: block, t, count=1)
         else:
             i = re.search(r"<style[^>]*>", t).end()
             t = t[:i] + "\n    " + block + t[i:]
